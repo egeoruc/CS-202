@@ -1,5 +1,5 @@
 public class User {
-    public final int userId;
+    public int userId;
     public final String name;
     public final String type;
     public final String address;
