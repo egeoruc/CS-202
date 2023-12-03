@@ -32,7 +32,10 @@ public class Main {
 
 
 
-    //Add a new seller to the User table
+    /*This method is for adding new seller to User table
+    Since the userId key is auto incremented. If we try to insert a new value wo. userId it will
+    automoticly generate a key. We do this then return the genereted key.
+     */
     public int addSeller(String name, String address) {
         int createdSeller = -1;
         try {
@@ -55,7 +58,10 @@ public class Main {
     }
 
 
-    //Add a new customer to the User table
+    /*This method is for adding new customer to User table
+    Since the userId key is auto incremented. If we try to insert a new value wo. userId it will
+    automoticly generate a key. We do this then return the genereted key.
+     */
     public int addCustomer(String name, String address) {
     int createdCustomer = -1;
     try {
@@ -77,7 +83,9 @@ public class Main {
     return createdCustomer;
     }
 
-    //Add a new product to the Product table
+    /*In this method we are adding new peoduct to product table.
+     * Since the productId is auto incremented sql will generate the productId and we return that genereted key.
+     */
     public int addProduct(String productName, String productDescription, int categoryId) {
         int createdProduct = -1;
         try {
@@ -99,7 +107,14 @@ public class Main {
         return createdProduct;
     }
 
-    //Add or remove a payment method from Payment table
+    /*this method is for custumization the payment method. Logic of the method is goes like this: 
+     -first it checks the is the given user is a customer or seller.
+     -if the user type is not customer it directly return false.
+     -if the user type is customer then we check for the given paramater type rather 'add' or 'remove'
+     -for the add part we just insert the payment table end return true
+     -for the remove part we first check is there a such a method with given cardNumber if not we return immediately false
+     if there is such a method then we delete that   
+     */
     public boolean customizePaymentMethod(int userId, String type, String cardNumber){
 
         boolean success = false;
@@ -152,7 +167,7 @@ public class Main {
     
     
 
-    //lists all users in the User table
+    /* lists all users in User table */
     public ArrayList<User> listAllUsers() {
         ArrayList<User> userList = new ArrayList<>();
         try {
@@ -175,7 +190,7 @@ public class Main {
         return userList;
     }
 
-    //lists all products in product table
+    /* lists all products in the product table.*/
     public ArrayList<Product> listAllProducts() {
         ArrayList<Product> productList = new ArrayList<>();
         try {
@@ -196,6 +211,9 @@ public class Main {
         return productList;
     }
 
+    /*lists all the payment methods for given user. 
+    first our methods matches the given userId in the payment table
+    then gets the every cardNumber value with the same userId*/
     public ArrayList<String> listPaymentMethods(int userId) {
         ArrayList<String> paymentMethods = new ArrayList<>();
         try {
@@ -240,6 +258,8 @@ public class Main {
             for (String cardNumber : paymentMethods) {
                 System.out.println("Card Number: " + cardNumber);
             }
+
+            int commit = 0;
 
             /* 
             ArrayList<User> userList = main.listAllUsers();
