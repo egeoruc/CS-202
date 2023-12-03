@@ -78,10 +78,10 @@ public class Main {
     }
 
     //Add a new product to the Product table
-    public int addProduct(String productName, String productDescription) {
+    public int addProduct(String productName, String productDescription, int categoryId) {
         int createdProduct = -1;
         try {
-            String query = "INSERT INTO Product (name, description) VALUES ('" + productName + "', '" + productDescription + "');";
+            String query = "INSERT INTO Product (categoryId, name, description) VALUES (" + categoryId + ", '" + productName + "', '" + productDescription + "');";
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
     
@@ -98,9 +98,56 @@ public class Main {
         }
         return createdProduct;
     }
+
+    //Add or remove a payment method from Payment table
+    public boolean customizePaymentMethod(int userId, String type, String cardNumber){
+
+        boolean success = false;
+
+        String userTypeQuery = "SELECT type FROM User WHERE userId = " + userId + ";";
+        try (Statement userTypeStatement = connection.createStatement()){
+            
+            ResultSet userTypeResult = userTypeStatement.executeQuery(userTypeQuery);
+
+            if(userTypeResult.next()){
+                String userType = userTypeResult.getString("type");
+
+                if(userType.equals("Customer")){
+                    if(type.equals("add")){
+                        String addPaymentMethod= "INSERT INTO Payment (userId, cardNumber) VALUES (" + userId + ", '" + cardNumber + "');";
+                        try (Statement addPayment = connection.createStatement()){
+                            addPayment.executeUpdate(addPaymentMethod);
+                            success = true;
+                        } catch (Exception e) {
+                            System.out.println("Fallied to add new payment method.");
+                            success = true;
+                        }
+                    }else if(userType.equals("remove")){
+                        String removePaymentQuery = "DELETE FROM Payment WHERE userId = " + userId + " AND cardNumber = '" + cardNumber + "';";
+                        try (Statement removePaymentStatement = connection.createStatement()) {
+                            int rowsAffected = removePaymentStatement.executeUpdate(removePaymentQuery);
+                            success = rowsAffected > 0;
+                            System.out.println("Payment method successfully removed.");
+                        }
+                    }
+
+
+
+                }else if(userType.equals("Seller")){
+                    success = false;
+                    System.out.println("Provided userId was a seller.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Failed to customize the peyment method.");
+        }
+
+        return success;
+    }
+    
     
 
-   
+    //lists all users in the User table
     public ArrayList<User> listAllUsers() {
         ArrayList<User> userList = new ArrayList<>();
         try {
@@ -123,11 +170,32 @@ public class Main {
         return userList;
     }
 
+    //lists all products in product table
+    public ArrayList<Product> listAllProducts() {
+        ArrayList<Product> productList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Product;";
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    int productId = resultSet.getInt("productId");
+                    String productName = resultSet.getString("name");
+                    Product product = new Product(productId, productName);
+                    productList.add(product);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get product table from database.");
+            e.printStackTrace();
+        }
+        return productList;
+    }
+
 
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/HW_2";
         String username = "root";
-        String password = "268";
+        String password = "26052708";
 
         Main main = new Main(url, username, password);
         if (main.connection != null) {
@@ -139,8 +207,11 @@ public class Main {
             int createdCustomer = main.addCustomer("Veli", "Dormitory 1");
             System.out.println("New Customer ID (Return of Function): " + createdCustomer);
 
-            int createdProduct = main.addProduct("Book", "A book about JDBC");
+            int createdProduct = main.addProduct("Book", "A book about JDBC", 1);
             System.out.println("New Product ID (Return of Function): " + createdProduct);
+
+            boolean addTest = main.customizePaymentMethod(createdCustomer, "add", "1333243");
+            System.out.println(addTest);
 
             /* 
             ArrayList<User> userList = main.listAllUsers();
@@ -148,7 +219,14 @@ public class Main {
                 System.out.println("UserID: " + user.getUserId() + ", " +"User Name: " + user.getName() + ", " + "User Type: " + user.getType() + ", " + "User Addres: "+ user.getAddress());
             }
             */
-           
+
+            /* 
+            ArrayList<Product> productList = main.listAllProducts();
+            for (Product product : productList) {
+                System.out.println("ProductID: " + product.getProductId() + ", " +"Product Name: " + product.getName());
+            }
+           */
+
             main.closeConnection();
         } else {
             System.out.println("Failed to make connection!");

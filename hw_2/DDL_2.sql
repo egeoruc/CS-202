@@ -17,7 +17,7 @@ CREATE TABLE User (
 );
 
 CREATE TABLE Payment (
-    paymentId INT PRIMARY KEY,
+    paymentId INT AUTO_INCREMENT PRIMARY KEY,
     userId INT,
     cardNumber VARCHAR(50),
     FOREIGN KEY (userId) REFERENCES User(userId)
@@ -30,8 +30,10 @@ CREATE TABLE Category (
 
 CREATE TABLE Product (
     productId INT AUTO_INCREMENT PRIMARY KEY,
+    categoryId INT,
     name VARCHAR(255),
-    description VARCHAR(255)
+    description VARCHAR(255),
+    FOREIGN KEY (categoryId) REFERENCES Category(categoryId)
 );
 
 CREATE TABLE Listing (

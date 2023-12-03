@@ -21,3 +21,6 @@ INSERT INTO CategoryStats (categoryId, averagePrice) VALUES (2, 25);
 
 
 
+
+
+
