@@ -115,7 +115,7 @@ public class Main {
      -for the remove part we first check is there a such a method with given cardNumber if not we return immediately false
      if there is such a method then we delete that   
      */
-    public boolean customizePaymentMethod(int userId, String type, String cardNumber){
+    public boolean addRemovePaymentMethod(int userId, String type, String cardNumber){
 
         boolean success = false;
 
@@ -164,6 +164,41 @@ public class Main {
 
         return success;
     }
+
+    /* This method is for adding/romoving something to category table
+    -our method first chechks if the given type is add or remove
+    -if the given type is add then it insert the value with given name since the id is auto incremented it doesnt give an error
+    -if the given type is remove than our method first cheks the if there is any category with given name if not then it returns false
+    -if we have such a category with the given name than we delete it
+    */
+    public boolean addRemoveCategory(String name, String type) {
+        boolean success = false;
+    
+        try {
+            if ("add".equals(type)) {
+                String addCategoryQuery = "INSERT INTO Category (name) VALUES ('" + name + "')";
+                try (Statement addCategoryStatement = connection.createStatement()) {
+                    addCategoryStatement.executeUpdate(addCategoryQuery);
+                    success = true;
+                    System.out.println("Category added.");
+                }
+            } else if ("remove".equals(type)) {
+                String removeCategoryQuery = "DELETE FROM Category WHERE name = '" + name + "'";
+                try (Statement removeCategoryStatement = connection.createStatement()) {
+                    int rowsAffected = removeCategoryStatement.executeUpdate(removeCategoryQuery);
+                    success = rowsAffected > 0;
+                    System.out.println("Category " + (success ? "deleted." : "does not exist."));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to add or remove category.");
+            e.printStackTrace();
+        }
+    
+        return success;
+    }
+    
+
     
     
 
@@ -251,15 +286,19 @@ public class Main {
             int createdProduct = main.addProduct("Book", "A book about JDBC", 1);
             System.out.println("New Product ID (Return of Function): " + createdProduct);
 
-            boolean addTest = main.customizePaymentMethod(16, "add", "33454343");
-            System.out.println(addTest);
-            
+            boolean paymentAddTest = main.addRemovePaymentMethod(16, "add", "33454343");
+            System.out.println(paymentAddTest);
+
             ArrayList<String> paymentMethods = main.listPaymentMethods(16);
             for (String cardNumber : paymentMethods) {
                 System.out.println("Card Number: " + cardNumber);
             }
 
-            int commit = 0;
+            boolean categoryAddTest = main.addRemoveCategory("sdsda", "add");
+            System.out.println(categoryAddTest);
+            
+
+            
 
             /* 
             ArrayList<User> userList = main.listAllUsers();

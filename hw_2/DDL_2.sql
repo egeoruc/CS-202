@@ -24,7 +24,7 @@ CREATE TABLE Payment (
 );
 
 CREATE TABLE Category (
-    categoryId INT PRIMARY KEY,
+    categoryId INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255)
 );
 
