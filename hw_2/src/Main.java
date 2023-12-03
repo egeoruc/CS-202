@@ -118,12 +118,16 @@ public class Main {
                         try (Statement addPayment = connection.createStatement()){
                             addPayment.executeUpdate(addPaymentMethod);
                             success = true;
+
                         } catch (Exception e) {
                             System.out.println("Fallied to add new payment method.");
                             success = true;
+
+
                         }
                     }else if(userType.equals("remove")){
                         String removePaymentQuery = "DELETE FROM Payment WHERE userId = " + userId + " AND cardNumber = '" + cardNumber + "';";
+
                         try (Statement removePaymentStatement = connection.createStatement()) {
                             int rowsAffected = removePaymentStatement.executeUpdate(removePaymentQuery);
                             success = rowsAffected > 0;
@@ -134,6 +138,7 @@ public class Main {
 
 
                 }else if(userType.equals("Seller")){
+                    
                     success = false;
                     System.out.println("Provided userId was a seller.");
                 }
@@ -191,6 +196,24 @@ public class Main {
         return productList;
     }
 
+    public ArrayList<String> listPaymentMethods(int userId) {
+        ArrayList<String> paymentMethods = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM Payment WHERE userId = " + userId;
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery(query);
+                while (resultSet.next()) {
+                    String cardNumber = resultSet.getString("cardNumber");
+                    paymentMethods.add(cardNumber);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Failed to get payment methods from database.");
+            e.printStackTrace();
+        }
+        return paymentMethods;
+    }
+
 
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:3306/HW_2";
@@ -210,8 +233,13 @@ public class Main {
             int createdProduct = main.addProduct("Book", "A book about JDBC", 1);
             System.out.println("New Product ID (Return of Function): " + createdProduct);
 
-            boolean addTest = main.customizePaymentMethod(createdCustomer, "add", "1333243");
+            boolean addTest = main.customizePaymentMethod(16, "add", "33454343");
             System.out.println(addTest);
+            
+            ArrayList<String> paymentMethods = main.listPaymentMethods(16);
+            for (String cardNumber : paymentMethods) {
+                System.out.println("Card Number: " + cardNumber);
+            }
 
             /* 
             ArrayList<User> userList = main.listAllUsers();
