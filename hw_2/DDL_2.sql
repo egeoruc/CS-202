@@ -37,10 +37,10 @@ CREATE TABLE Product (
 );
 
 CREATE TABLE Listing (
-    listingId INT PRIMARY KEY,
+    listingId INT AUTO_INCREMENT PRIMARY KEY,
     sellerId INT,
     productId INT,
-    price INT,
+    price DOUBLE,
     stock INT,
     FOREIGN KEY (sellerId) REFERENCES User(userId),
     FOREIGN KEY (productId) REFERENCES Product(productId)
